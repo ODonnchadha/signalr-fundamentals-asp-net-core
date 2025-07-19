@@ -202,4 +202,40 @@
                 - And both client and server have buffers.
     - Streaming:
         - Specific scenarios.
-        
+        - Overhaed? Messages in Websockets connection are relatively inexpensive. Serialization/deserialization overhead.
+        - Not for audio/video. JSON-based transport. And JSON in binary form.
+        - Good option? When lengthy calculations or processing is concerned.
+            - Involving multiple outcomes. Wanting something when it first becomes available.
+        - [GitHub SignalR Streaming](https://github.com/RolandGuijt/SignalRStreaming)
+            - Streamed data for a duration and then the stream completes.
+            ```csharp
+                public async IAsyncEnumerable<int> Counter(CountInfo info, [EnumeratorCancellation] CancellationToken token)
+                {
+                    for (var i = 0; i < info.Until; i++)
+                    {
+                        token.ThrowIfCancellationRequested();
+                        yeild return i;
+                        await Task.Delay(info.Delay, token);
+                    }
+                }
+            ```
+            ```csharp
+                try
+                {
+                    var token = new CancellationTokenSource();
+                    var stream = connection.StreamAsync<int>("Counter", new Info { Until=10, Delay=500 }, token.Token);
+                    await foreach (var c in stream)
+                    {
+                        Console.WriteLine(c);
+                    }
+                    Console.WriteLine("Stream complete.");
+                }
+                finally
+                {
+                    await connection.StopAsync();
+                }
+            ```
+
+- AUTHENTICATION & AUTHORIZATION:
+    - Cookie Authentication:
+        - 
